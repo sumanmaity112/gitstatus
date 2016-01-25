@@ -25,7 +25,7 @@ var findDetails = function(userName){
 			emitter.emit('end_response');
 		}
 		else{
-			var note = 'Status code is '+ response.code + ' on '+ new Date().toLocaleString();
+			var note = 'Status code is '+ response.code + ' on '+ new Date().toLocaleString()+'\n';
 			fs.appendFile('./data/update.log',note,function(){});
 			process.exit(1);
 		}
@@ -42,7 +42,7 @@ var countResponse = function(maxCount){
 var writeToFile = function(data){
 	data = JSON.stringify(data);
 	fs.writeFileSync('result.JSON',data);
-	var note = 'Details updated.............. on '+ new Date().toLocaleString();
+	var note = 'Details updated.............. on '+ new Date().toLocaleString()+'\n';
 	fs.appendFile('./data/update.log',note,function(){});
 };;
 var createResultForAnalysis = function(){
