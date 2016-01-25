@@ -1,0 +1,17 @@
+doctype html
+html(lang="en")
+	head
+	body
+		h1 !{Object.keys(user)}
+		h3 Github Id: !{user[Object.keys(user)].id}
+		h4 Repositories
+		ul
+			each key, index in user[Object.keys(user)]
+				- var x= Object.keys(user[Object.keys(user)]).indexOf(index)
+				- var length = Object.keys(user[Object.keys(user)]).length
+				if x<=length-3
+					li= index
+					ul
+						each value, index in key
+							li= index+' : ' + value
+		h4 Total repositories : !{(Object.keys(user[Object.keys(user)]).length-2).toString()}

@@ -1,0 +1,8 @@
+doctype html
+html(lang="en")
+	body
+		h1 ALL INTERNS
+		ul
+			each name in user
+				li
+					a(href='/interns/'+name) !{name}
