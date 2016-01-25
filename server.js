@@ -4,12 +4,13 @@ var fs = require('fs');
 var lodash = require('lodash');
 var updateDetails = require('./takeImportantDetails.js');
 var users={};
-setInterval(updateDetails,10800000);
-	updateDetails();
-	readFile();
+
 var readFile = function(){
 	users = JSON.parse(fs.readFileSync('./result.JSON','utf8'));
 };
+setInterval(updateDetails,10800000);
+updateDetails();
+readFile();
 
 var IP_ADDRESS = process.env.OPENSHIFT_NODEJS_IP;
 var PORT = process.env.OPENSHIFT_NODEJS_PORT || 4040;
