@@ -18,7 +18,7 @@ var findDetails = function(userName){
 			var data = response.body;
 			Object.keys(data).forEach(function(repoName){
 				var repos = data[repoName];
-				temp[repos.name]={created_at:moment(repos.created_at).tz('Asia/Kolkata').format('DD-MM-YYYY HH:mm'),pushed_at:moment(repos.pushed_at).tz('Asia/Kolkata').format('DD-MM-YYYY HH:mm'),language:repos.language};	
+				temp[repos.name]={created_at:moment(repos.created_at).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma'),pushed_at:moment(repos.pushed_at).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma'),language:repos.language};	
 			});
 			result[userName.name]=temp;
 			result[userName.name].total_repo = Object.keys(temp).length;
@@ -26,7 +26,7 @@ var findDetails = function(userName){
 			emitter.emit('end_response');
 		}
 		else{
-			var note = 'Status code is '+ response.code + ' on '+ moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY HH:mm')+'\n';
+			var note = 'Status code is '+ response.code + ' on '+ moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma')+'\n';
 			fs.appendFile('./data/update.log',note,function(){});
 			process.exit(1);
 		}
@@ -43,7 +43,7 @@ var countResponse = function(maxCount){
 var writeToFile = function(data){
 	data = JSON.stringify(data);
 	fs.writeFileSync('result.JSON',data);
-	var note = 'Details updated.............. on '+ moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY HH:mm')+'\n';
+	var note = 'Details updated.............. on '+ moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma')+'\n';
 	fs.appendFile('./data/update.log',note,function(){});
 };;
 var createResultForAnalysis = function(){
