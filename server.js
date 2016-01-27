@@ -8,9 +8,12 @@ var users={};
 var readFile = function(){
 	users = JSON.parse(fs.readFileSync('./result.JSON','utf8'));
 };
-setInterval(updateDetails,10800000);
 updateDetails();
-readFile();
+setTimeout(readFile,60000);
+setInterval(function(){
+	updateDetails();
+	setTimeout(readFile,600000);
+},10800000);
 
 var IP_ADDRESS = process.env.OPENSHIFT_NODEJS_IP;
 var PORT = process.env.OPENSHIFT_NODEJS_PORT || 4040;
