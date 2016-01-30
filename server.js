@@ -3,7 +3,9 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var lodash = require('lodash');
+var queryString = require('querystring');
 var moment = require('moment-timezone');
+var urlParse = require('url-parse');
 var bodyParser = require('body-parser');
 var lib = require('./takeImportantDetails.js').lib;
 var updateDetails = lib.createResultForAnalysis;
@@ -12,12 +14,13 @@ var users={};
 var readFile = function(){
 	users = JSON.parse(fs.readFileSync('./result.JSON','utf8'));
 };
-updateDetails();
-setTimeout(readFile,60000);
-setInterval(function(){
-	updateDetails();
-	setTimeout(readFile,600000);
-},10800000);
+readFile();
+// updateDetails();
+// setTimeout(readFile,60000);
+// setInterval(function(){
+// 	updateDetails();
+// 	setTimeout(readFile,600000);
+// },10800000);
 
 var IP_ADDRESS = process.env.OPENSHIFT_NODEJS_IP;
 var PORT = process.env.OPENSHIFT_NODEJS_PORT || 4040;
@@ -34,7 +37,7 @@ var searchDetails = function(response,userName,res){
 	}
 	else{
 		res.statusCode=404;
-		res.send('Id not found');
+		res.redirect('/pageNotFound.html');
 	}
 };
 
@@ -55,19 +58,23 @@ app.get(/\/interns/,function(req,res){
 		res.render('createOneHtml',{user:user});	
 	}
 	else{
-		res.statusCode=405;
-		res.end('Invalid intern name')
+		res.statusCode=404;
+		res.redirect('/pageNotFound.html');
 	}
 });
 
 app.post('/login',function(req,res){
 	fs.appendFile('./data/usersLog.log',req.body.name+'  '+moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma')+'\n',function(){});
+	res.redirect('/allInternDetails');
+});
+app.get('/allInternDetails',function(req,res){
 	res.render('allDetails',{user:Object.keys(users).sort()});
 });
 
-app.post('/search',function(req,res){
-	lib.findDetails({id:req.body.gitId,name:''},searchDetails,res);
-})
+app.get('/search',function(req,res){
+	var query = urlParse.qs.parse(req.url);
+	lib.findDetails({id:query.gitId,name:''},searchDetails,res);
+});
 
 var server = http.createServer(app);
 server.listen(PORT,IP_ADDRESS);
