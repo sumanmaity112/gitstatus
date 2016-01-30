@@ -1,8 +1,10 @@
 doctype html
 html(lang="en")
+	link(href='/style/allDetails.css', rel='stylesheet')
 	head
 	body
-		h1 !{Object.keys(user)}
+		h1 Git Status
+		h2 !{Object.keys(user)}
 		h3 Github Id: !{user[Object.keys(user)].id}
 		h4 Repositories
 		ul

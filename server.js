@@ -5,7 +5,8 @@ var fs = require('fs');
 var lodash = require('lodash');
 var moment = require('moment-timezone');
 var bodyParser = require('body-parser');
-var updateDetails = require('./takeImportantDetails.js');
+var lib = require('./takeImportantDetails.js').lib;
+var updateDetails = lib.createResultForAnalysis;
 var users={};
 
 var readFile = function(){
@@ -20,6 +21,22 @@ setInterval(function(){
 
 var IP_ADDRESS = process.env.OPENSHIFT_NODEJS_IP;
 var PORT = process.env.OPENSHIFT_NODEJS_PORT || 4040;
+
+
+var searchDetails = function(response,userName,res){
+	var temp={},result={};
+	if(response.code==200){
+		temp = lib.createRepoDetails(response.body);
+		result[userName.name]=temp;
+		result[userName.name].total_repo = Object.keys(temp).length;
+		result[userName.name].id=userName.id;
+		res.render('createOneHtml',{user:result})
+	}
+	else{
+		res.statusCode=404;
+		res.send('Id not found');
+	}
+};
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine','jade');
@@ -41,11 +58,15 @@ app.get(/\/interns/,function(req,res){
 		res.statusCode=405;
 		res.end('Invalid intern name')
 	}
-})
+});
 
 app.post('/login',function(req,res){
 	fs.appendFile('./data/usersLog.log',req.body.name+'  '+moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma')+'\n',function(){});
 	res.render('allDetails',{user:Object.keys(users).sort()});
+});
+
+app.post('/search',function(req,res){
+	lib.findDetails({id:req.body.gitId,name:''},searchDetails,res);
 })
 
 var server = http.createServer(app);
