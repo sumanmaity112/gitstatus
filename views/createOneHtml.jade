@@ -4,16 +4,35 @@ html(lang="en")
 	head
 	body
 		h1 Git Status
-		h2 !{Object.keys(user)}
-		h3 Github Id: !{user[Object.keys(user)].id}
-		h4 Repositories
-		ul
-			each key, index in user[Object.keys(user)]
-				- var x= Object.keys(user[Object.keys(user)]).indexOf(index)
-				- var length = Object.keys(user[Object.keys(user)]).length
-				if x<=length-3
-					li= index
-					ul
-						each value, index in key
-							li= index+' : ' + value
-		h4 Total repositories : !{(Object.keys(user[Object.keys(user)]).length-2).toString()}
+		div(class='userData')
+			table(class='details')
+				tr
+					th Name
+					th GitHub ID
+					th Total Repositories
+				tr(style='text-align:center')
+					td !{Object.keys(user)}
+					td !{user[Object.keys(user)].id}
+					td !{Object.keys(user[Object.keys(user)]).length-2}
+			table(class='data')
+				tr(style='background-color:#a7a8ad')
+					th Project
+					th Created At
+					th Last Update
+					th Language
+					- var i = 1;
+					each key, index in user[Object.keys(user)]
+						- i=i+1
+						- var x= Object.keys(user[Object.keys(user)]).indexOf(index)
+						- var length = Object.keys(user[Object.keys(user)]).length
+						- var project = index
+						if i%2==0
+							- var cls='even'
+						else
+							- var cls='odd'
+
+						tr(class=cls)
+							if x<=length-3
+								td=project
+								each value, index in key
+									td=value
