@@ -11,7 +11,7 @@ lib.createRepoDetails = function(data){
 	var temp = {};
 	Object.keys(data).forEach(function(repoName){
 		var repos = data[repoName];
-		temp[repos.name]={created_at:moment(repos.created_at).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma'),pushed_at:moment(repos.pushed_at).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma'),language:repos.language};	
+		temp[repos.name]={created_at:moment(repos.created_at).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma'),pushed_at:moment(repos.pushed_at).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma'),language:repos.language};
 	});
 	return temp;
 };
@@ -29,7 +29,7 @@ var updateResult=function(response,userName){
 		var note = 'Status code is '+ response.code + ' on '+ moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma')+'\n';
 		fs.appendFile('./data/update.log',note,function(){});
 		process.exit(1);
-	}	
+	}
 };
 
 lib.findDetails = function(userName,callBack,res){
@@ -39,7 +39,7 @@ lib.findDetails = function(userName,callBack,res){
 	.header("Accept", "application/json")
 	.header('Authorization','token '+process.env.gitToken)
 	.end(function(response){
-		callBack(response,userName,res);		
+		callBack(response,userName,res);
 	});
 };
 
@@ -52,7 +52,11 @@ var countResponse = function(maxCount){
 	}
 };
 
-var writeToFile = function(data){
+var writeToFile = function(unsortedData){
+	var data ={};
+	Object.keys(unsortedData).sort().forEach(function(userName){
+		data[userName] = unsortedData[userName];
+	})
 	data = JSON.stringify(data);
 	fs.writeFileSync('result.JSON',data);
 	var note = 'Details updated.............. on '+ moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma')+'\n';

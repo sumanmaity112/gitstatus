@@ -14,7 +14,6 @@ var users={};
 var readFile = function(){
 	users = JSON.parse(fs.readFileSync('./result.JSON','utf8'));
 };
-
 updateDetails();
 setTimeout(readFile,60000);
 setInterval(function(){
@@ -40,6 +39,17 @@ var searchDetails = function(response,userName,res){
 		res.redirect('/pageNotFound.html');
 	}
 };
+
+var makeJist = function(users){
+	var basicData = [];
+	for(var user in users){
+		var individualData = {name : user, totalCount : users[user].total_repo} ;
+		var user_repos = Object.keys(users[user]);
+		individualData.repos = lodash.sampleSize(lodash.take(user_repos, user_repos.length-2),2);
+		basicData.push(individualData);
+	}
+	return basicData;
+}
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine','jade');
@@ -68,7 +78,8 @@ app.post('/login',function(req,res){
 	res.redirect('/allInternDetails');
 });
 app.get('/allInternDetails',function(req,res){
-	res.render('allDetails',{user:Object.keys(users).sort()});
+	var basicData = makeJist(users);
+	res.render('allDetails',{basicData:basicData});
 });
 
 app.get('/search',function(req,res){

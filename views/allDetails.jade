@@ -10,6 +10,16 @@ html(lang="en")
 					input(type="submit",value="Search",id="submit")
 				h2 ALL STEP-2015 INTERNS
 			div(class='nameContainer')
-				each name in user
-						a(href='/interns/'+name)
-							div(class='nameBlock') !{name}
+				each user in basicData
+						div(class='nameBlock_new')
+							div(class='name') !{user.name}
+								div(class='repo-details')
+									div(class='left')
+										label(class='decor') Total Repos
+										h3(class='count-labler') !{user.totalCount}
+									div(class='right')
+										label(class='decor') Repositories
+										li !{user.repos[0]}
+										li !{user.repos[1]}
+										a(href='/interns/'+user.name)
+											li(style='float:right') More...
