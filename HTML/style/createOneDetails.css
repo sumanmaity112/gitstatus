@@ -1,5 +1,58 @@
+body{
+	font-family: "Segoe UI",Arial,sans-serif;
+}
 h1{
     width: 173px;
 	margin: 0 auto;
 	border-bottom: 2px lightgrey dashed;
+    text-align: center;
+}
+
+.userData{
+    width : 1200px;
+    margin: 50px auto;
+    padding: 30px;
+}
+
+.even{
+    background-color: #ededed;
+}
+
+.odd{
+    background-color: #d2d4d6;
+}
+
+.data{
+    padding:30px;
+    margin: 0 auto;
+}
+
+tr.even:hover, tr.odd:hover{
+    background-color: grey;
+    color : white;
+    transition: background-color 0.3s ease-in;
+}
+
+td{
+    padding: 20px 30px 20px 30px;
+}
+
+th{
+    padding: 30px;
+    border-color: white;
+}
+
+.details th{
+    background-color: #e7e9e9;
+}
+.details th, .details td{
+    padding: 10px;
+    border: 2px solid white;
+}
+.details{
+    border-collapse: collapse;
+    margin : 0 auto;
+    width : 65.8%;
+    line-height : 10px;
+    background-color: #f0f1f4;
 }
