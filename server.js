@@ -7,12 +7,45 @@ var queryString = require('querystring');
 var moment = require('moment-timezone');
 var urlParse = require('url-parse');
 var bodyParser = require('body-parser');
+var dbLib = require('./updateDb.js').dbLib;
 var lib = require('./takeImportantDetails.js').lib;
+var pg = require('pg');
+var conString = process.env.conString;
+var client = new pg.Client(conString);
+client.connect();
+
 var updateDetails = lib.createResultForAnalysis;
 var users={};
+const SUB_TABLE_ATTRIBUTES=['repoName varchar(200) primary key','createdAt varchar(25)','pushAt varchar(25)','language varchar(25)','repoLink varchar(350)'];
 
 var readFile = function(){
 	users = JSON.parse(fs.readFileSync('./result.JSON','utf8'));
+	var gitAttributes = ['name varchar(200)','id varchar(100) primary key','gitHubLink varchar(250)'];
+	var tables = [{tableName:'gitdetails',gitAttributes:gitAttributes}];
+	tables.forEach(function(element){
+		dbLib.createTable(client,element.tableName,element.gitAttributes);
+	});
+
+	Object.keys(users).forEach(function(name){
+		var gitId = users[name].id;
+		var gitHubLink = 'https://github.com/'+gitId;
+		var query = dbLib.makeInsertQuery('gitdetails',['name','id','gitHubLink'],[name,gitId,gitHubLink]);
+		dbLib.runQuery(client,query);
+		dbLib.createTable(client,gitId,SUB_TABLE_ATTRIBUTES);
+		var repos= Object.keys(users[name]);
+		repos.slice(0,repos.length-2).forEach(function(repoName){
+			var tableName = gitId.replace('-','_');
+			var repoDetails = users[name][repoName];
+			var repoLink = 'https://github.com/'+users[name].id+'/'+repoName;
+			var insertedValue = [repoName,repoDetails.created_at,repoDetails.pushed_at,repoDetails.language,repoLink];
+			var insertQuery = dbLib.makeSubTableInsertQuery(tableName,['repoName','createdAt','pushAt','language','repoLink'],insertedValue);
+			var updatedValue = [repoDetails.created_at,repoDetails.pushed_at,repoDetails.language];
+			dbLib.runQuery(client,insertQuery);
+			var updateAttributes = ['createdAt','pushAt','language']
+			var updateQuery = dbLib.makeUpdateQuery(tableName,updateAttributes,updatedValue,"repoName='"+repoName+"'");
+			dbLib.runQuery(client,updateQuery);
+		})
+	});
 };
 
 updateDetails();
@@ -24,7 +57,6 @@ setInterval(function(){
 
 var IP_ADDRESS = process.env.OPENSHIFT_NODEJS_IP;
 var PORT = process.env.OPENSHIFT_NODEJS_PORT || 4040;
-
 
 var searchDetails = function(response,userName,res){
 	var temp={},result={};
