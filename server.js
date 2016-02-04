@@ -12,13 +12,54 @@ var lib = require('./takeImportantDetails.js').lib;
 var Scheduler = require('./scheduler.js');
 var pg = require('pg');
 var userNames = JSON.parse(fs.readFileSync('users.JSON','utf8'));
-var conString = 'pg://'+process.env.OPENSHIFT_POSTGRESQL_DB_USERNAME+':'+process.env.OPENSHIFT_POSTGRESQL_DB_PASSWORD+'@'+process.env.OPENSHIFT_POSTGRESQL_DB_HOST+':'+process.env.OPENSHIFT_POSTGRESQL_DB_PORT+'/gitstatus';
+if(!process.env.OPENSHIFT_POSTGRESQL_DB_USERNAME)
+	var conString = 'pg://postgres:sumanmaity@localhost:5432/postgres'
+else
+	var conString = 'pg://'+process.env.OPENSHIFT_POSTGRESQL_DB_USERNAME+':'+process.env.OPENSHIFT_POSTGRESQL_DB_PASSWORD+'@'+process.env.OPENSHIFT_POSTGRESQL_DB_HOST+':'+process.env.OPENSHIFT_POSTGRESQL_DB_PORT+'/gitstatus';
 console.log(conString,'  --------')
 // var conString = 'postgresql://$OPENSHIFT_POSTGRESQL_DB_HOST:$OPENSHIFT_POSTGRESQL_DB_PORT';
 var client = new pg.Client(conString);
 client.connect();
 var updateDetails = lib.createResultForAnalysis;
 var users={};
+
+
+
+
+var passport = require('passport')
+var FacebookStrategy = require('passport-facebook').Strategy;
+
+passport.use(new FacebookStrategy({
+    clientID: process.env.FACEBOOK_APP_ID,
+    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    callbackURL: "http://gitstatus-projectsm.rhsloud.com/allInternDetails"
+  },
+  function(accessToken, refreshToken, profile, done) {
+  	console.log('-------------------------------------------------')
+    User.findOrCreate({ facebookId: profile.id }, function(err, user) {
+      if (err) { return done(err); }
+      done(null, user);
+    });
+  }
+));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var scheduler = new Scheduler();
 scheduler.addLimit(4990,1000);
 scheduler.start();
@@ -126,14 +167,15 @@ var makeJist = function(users){
 	}
 	return basicData;
 }
-
+app.use(function(req,res,next){console.log(req.url);next()})
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine','jade');
 app.use(express.static('./HTML'));
 app.get('/', function(req, res){
 	res.redirect('/index.html');
 });
-
+app.get('/auth/facebook', passport.authenticate('facebook'));
+app.get('/auth/facebook/callback',passport.authenticate('facebook', { successRedirect: '/allInternDetails',failureRedirect: '/' }));
 app.get(/\/interns/,function(req,res){
 	var userName = req.url.split('/interns/')[1];
 	userName = userName.replace(/%20/g,' ');
