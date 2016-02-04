@@ -6,14 +6,28 @@
 	<link rel="stylesheet" href="./style/index.css">
 </head>
 <body>
+	<div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5&appId=1244021775614809";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
 	<div class="main">
 		<h1>Git Status</h1>
 		<a href="/auth/facebook">Login with Facebook</a>
-		<h2 id="info">Enter Your Name</h2>
-		<form action="login" method="POST" id="login">
+		<div class="fb-login-button" data-max-rows="4" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true"></div>
+		<!-- <h2 id="info">Enter Your Name</h2> -->
+		<!-- <form action="login" method="POST" id="login">
 			<input type="text" id="name" name="name" placeholder="Example: John Smith" required>
 			<input type="submit" value="Continue..." id="submit">
-		</form>
+		</form> -->
 	</div>
 </body>
 </html>
