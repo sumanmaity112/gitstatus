@@ -12,7 +12,7 @@ var lib = require('./takeImportantDetails.js').lib;
 var Scheduler = require('./scheduler.js');
 var pg = require('pg');
 var userNames = JSON.parse(fs.readFileSync('users.JSON','utf8'));
-var conString = 'pg://'+process.env.username+':'+process.env.password+'@'+$OPENSHIFT_POSTGRESQL_DB_HOST+':'+$OPENSHIFT_POSTGRESQL_DB_PORT+'/'+process.env.database;
+var conString = 'pg://'+process.env.username+':'+process.env.password+'@'+process.env.OPENSHIFT_POSTGRESQL_DB_HOST+':'+process.env.OPENSHIFT_POSTGRESQL_DB_PORT+'/'+process.env.database;
 // var conString = 'postgresql://$OPENSHIFT_POSTGRESQL_DB_HOST:$OPENSHIFT_POSTGRESQL_DB_PORT';
 var client = new pg.Client(conString);
 client.connect();
