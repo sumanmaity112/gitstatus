@@ -23,7 +23,6 @@ var updateResult=function(response,userName){
 		result[userName.name]=temp;
 		result[userName.name].total_repo = Object.keys(temp).length;
 		result[userName.name].id=userName.id;
-		emitter.emit('end_response');
 	}
 	else{
 		var note = 'Status code is '+ response.code + ' on '+ moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma')+'\n';
@@ -43,40 +42,8 @@ lib.findDetails = function(userName,callBack,res){
 	});
 };
 
-var countResponse = function(maxCount){
-	var count = 0;
-	return function(){
-		count++;
-		if(count==maxCount)
-			emitter.emit('writeToFile',result);
-	}
-};
-
-var writeToFile = function(unsortedData){
-	var data ={};
-	Object.keys(unsortedData).sort().forEach(function(userName){
-		data[userName] = unsortedData[userName];
-	})
-	data = JSON.stringify(data);
-	fs.writeFileSync('result.JSON',data);
-	var note = 'Details updated.............. on '+ moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma')+'\n';
-	fs.appendFile('./data/update.log',note,function(){});
-};
-
-lib.createResultForAnalysis = function(){
-	emitter.addListener('writeToFile',writeToFile);
-	if(!fs.existsSync('users.JSON')){
-		var userNamesAsText = fs.readFileSync('gitHubId.csv','utf8');
-		var userNames = userNamesAsText.split('\r\n').map(function(userName){
-			return {name:userName.split(',')[0].toLowerCase(),id:userName.split(',')[1]};
-		});
-		fs.writeFileSync('users.JSON',JSON.stringify(userNames));
-	}
-	var users = JSON.parse(fs.readFileSync('users.JSON','utf8'));
-	emitter.addListener('end_response',countResponse(users.length));
-	users.forEach(function(userName){
-		lib.findDetails(userName,updateResult);
-	});
+lib.createResultForAnalysis = function(userName){
+	lib.findDetails(userName,updateResult);
 };
 
 exports.lib=lib;

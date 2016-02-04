@@ -21,7 +21,6 @@ var Scheduler = function(startAfter){
 		var self = this;
 		this.timer = setInterval(function(){
 			if(pQueue.length){
-				console.log('*********************')
 				var topElement = getTopElement();
 				topElement.callBack(topElement.value);
 				updateRemainingLimit(topElement.priority,self);
@@ -29,8 +28,6 @@ var Scheduler = function(startAfter){
 				if(!self.totalLimit)
 					restartScheduler(self,time);
 			}
-			// if(!pQueue.length)
-				// self.stop();
 		},time);
 	};
 	this.length = 0;

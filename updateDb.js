@@ -1,7 +1,6 @@
 var dbLib = {};
 
 dbLib.createTable = function(client,tableName,attributes){
-	// console.log('----',tableName,'---');
 	var query = "create table if not exists "+tableName.replace('-','_') + " ( "+attributes.join()+');';
 	this.runQuery(client,query);
 };
@@ -24,7 +23,6 @@ dbLib.makeSubTableInsertQuery = function(tableName,attributes,values){
 };
 
 dbLib.runQuery = function(client,query){
-	// console.log('-----',query);
 	client.query(query,function(err,result){
 		if(err)
 			console.log(err,'----',query);
