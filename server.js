@@ -9,6 +9,7 @@ var urlParse = require('url-parse');
 var bodyParser = require('body-parser');
 var dbLib = require('./updateDb.js').dbLib;
 var lib = require('./takeImportantDetails.js').lib;
+var Scheduler = require('./scheduler.js');
 var pg = require('pg');
 var conString = process.env.conString;
 var client = new pg.Client(conString);
@@ -16,8 +17,36 @@ client.connect();
 
 var updateDetails = lib.createResultForAnalysis;
 var users={};
-const SUB_TABLE_ATTRIBUTES=['repoName varchar(200) primary key','createdAt varchar(25)','pushAt varchar(25)','language varchar(25)','repoLink varchar(350)'];
+var scheduler = new Scheduler();
+scheduler.addLimit(4990,1000);
+scheduler.start();
 
+const SUB_TABLE_ATTRIBUTES=['repoName varchar(200) primary key','created_At varchar(25)','push_At varchar(25)','language varchar(25)','repoLink varchar(350)','dbupdated_at numeric(20)'];
+
+var updateDBForEach = function(user,repos,gitId){
+	repos.slice(0,repos.length-2).forEach(function(repoName){
+		var tableName = gitId.replace('-','_');
+		var repoDetails = user[repoName];
+		var repoLink = 'https://github.com/'+user.id+'/'+repoName;
+		var insertedValue = [repoName,repoDetails.created_at,repoDetails.pushed_at,repoDetails.language,repoLink];
+		var insertQuery = dbLib.makeSubTableInsertQuery(tableName,['repoName','created_At','push_At','language','repoLink'],insertedValue);
+		var updatedValue = [repoDetails.created_at,repoDetails.pushed_at,repoDetails.language,new Date().getTime()];
+		dbLib.runQuery(client,insertQuery);
+		var updateAttributes = ['created_At','push_At','language','dbupdated_at']
+		var updateQuery = dbLib.makeUpdateQuery(tableName,updateAttributes,updatedValue,"repoName='"+repoName+"'");
+		dbLib.runQuery(client,updateQuery);
+	})
+}
+var updateDataBase = function(user,name){
+	name = name || null;
+	var gitId = user.id;
+	var gitHubLink = 'https://github.com/'+gitId;
+	var query = dbLib.makeInsertQuery('gitdetails',['name','id','gitHubLink'],[name,gitId,gitHubLink]);
+	dbLib.runQuery(client,query);
+	dbLib.createTable(client,gitId,SUB_TABLE_ATTRIBUTES);
+	var repos= Object.keys(user);
+	updateDBForEach(user,repos,gitId);
+}
 var readFile = function(){
 	users = JSON.parse(fs.readFileSync('./result.JSON','utf8'));
 	var gitAttributes = ['name varchar(200)','id varchar(100) primary key','gitHubLink varchar(250)'];
@@ -27,33 +56,20 @@ var readFile = function(){
 	});
 
 	Object.keys(users).forEach(function(name){
-		var gitId = users[name].id;
-		var gitHubLink = 'https://github.com/'+gitId;
-		var query = dbLib.makeInsertQuery('gitdetails',['name','id','gitHubLink'],[name,gitId,gitHubLink]);
-		dbLib.runQuery(client,query);
-		dbLib.createTable(client,gitId,SUB_TABLE_ATTRIBUTES);
-		var repos= Object.keys(users[name]);
-		repos.slice(0,repos.length-2).forEach(function(repoName){
-			var tableName = gitId.replace('-','_');
-			var repoDetails = users[name][repoName];
-			var repoLink = 'https://github.com/'+users[name].id+'/'+repoName;
-			var insertedValue = [repoName,repoDetails.created_at,repoDetails.pushed_at,repoDetails.language,repoLink];
-			var insertQuery = dbLib.makeSubTableInsertQuery(tableName,['repoName','createdAt','pushAt','language','repoLink'],insertedValue);
-			var updatedValue = [repoDetails.created_at,repoDetails.pushed_at,repoDetails.language];
-			dbLib.runQuery(client,insertQuery);
-			var updateAttributes = ['createdAt','pushAt','language']
-			var updateQuery = dbLib.makeUpdateQuery(tableName,updateAttributes,updatedValue,"repoName='"+repoName+"'");
-			dbLib.runQuery(client,updateQuery);
-		})
+		updateDataBase(users[name],name);
 	});
 };
-updateDetails();
-setTimeout(readFile,60000);
-setInterval(function(){
-	updateDetails();
-	setTimeout(readFile,600000);
-},10800000);
 
+var diffBetweenUpdate = function(){
+
+}
+// updateDetails();
+// setTimeout(readFile,60000);
+// setInterval(function(){
+// 	updateDetails();
+// 	setTimeout(readFile,600000);
+// },10800000);
+readFile();
 var IP_ADDRESS = process.env.OPENSHIFT_NODEJS_IP;
 var PORT = process.env.OPENSHIFT_NODEJS_PORT || 4040;
 
@@ -64,7 +80,10 @@ var searchDetails = function(response,userName,res){
 		result[userName.name]=temp;
 		result[userName.name].total_repo = Object.keys(temp).length;
 		result[userName.name].id=userName.id;
+		console.log('*****----',result);
 		res.render('createOneHtml',{user:result})
+		// console.log('-----------------------',result[Object.keys(result)[0]]);
+		scheduler.addJob(result[Object.keys(result)[0]],updateDataBase);
 	}
 	else{
 		res.statusCode=404;
@@ -116,7 +135,23 @@ app.get('/allInternDetails',function(req,res){
 
 app.get('/search',function(req,res){
 	var query = urlParse.qs.parse(req.url);
-	lib.findDetails({id:query.gitId,name:''},searchDetails,res);
+	var userData = client.query('select * from '+query.gitId,function(err,result){
+		if(!!err || !result.rows.length || (new Date().getTime() - (+result.rows[0].dbupdated_at))>3600000)
+			lib.findDetails({id:query.gitId,name:''},searchDetails,res);
+		else{
+			console.log('In else--------------',result.rows);
+			var tempResult = {};
+			tempResult['']={};
+			result.rows.forEach(function(row){
+				tempResult[''][row.reponame]={created_at:row.created_at,pushed_at:row.push_at,language:row.language}
+			});
+			tempResult[''].id=query.gitId;
+			tempResult[''].total_repo = result.rows.length;
+			// console.log(tempResult,'*****')
+			res.render('createOneHtml',{user:tempResult})
+		}
+		// console.log(result.rows);
+	});
 });
 
 var server = http.createServer(app);
