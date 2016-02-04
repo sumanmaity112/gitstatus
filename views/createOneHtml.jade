@@ -1,9 +1,20 @@
 doctype html
 html(lang="en")
 	link(href='/style/createOneDetails.css', rel='stylesheet')
+	script(type='text/javascript').
+		var createFbButton = function(d, s, id){
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) return;
+			js = d.createElement(s); 
+			js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5&appId=1244021775614809";
+			fjs.parentNode.insertBefore(js, fjs);
+		}
+		createFbButton(document, 'script', 'facebook-jssdk');
 	head
 	body
 		h1 Git Status
+		div(class="fb-login-button" data-max-rows="4" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true" id="facebook")
 		div(class='userData')
 			table(class='details')
 				tr

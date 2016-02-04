@@ -41,7 +41,12 @@ th{
     padding: 30px;
     border-color: white;
 }
-
+#facebook{
+    margin-left: 86%;
+    margin-top: -29px;
+    width: 125px;
+    display: inline-block;
+}
 .details th{
     background-color: #e7e9e9;
 }
