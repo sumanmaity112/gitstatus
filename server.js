@@ -17,7 +17,6 @@ if(!process.env.OPENSHIFT_POSTGRESQL_DB_USERNAME)
 	var conString = 'pg://postgres:sumanmaity@localhost:5432/postgres'
 else
 	var conString = 'pg://'+process.env.OPENSHIFT_POSTGRESQL_DB_USERNAME+':'+process.env.OPENSHIFT_POSTGRESQL_DB_PASSWORD+'@'+process.env.OPENSHIFT_POSTGRESQL_DB_HOST+':'+process.env.OPENSHIFT_POSTGRESQL_DB_PORT+'/gitstatus';
-console.log(conString,'  --------')
 // var conString = 'postgresql://$OPENSHIFT_POSTGRESQL_DB_HOST:$OPENSHIFT_POSTGRESQL_DB_PORT';
 var client = new pg.Client(conString);
 client.connect();
@@ -34,9 +33,10 @@ passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
     callbackURL: "http://gitstatus-projectsm.rhcloud.com/allInternDetails"
+    profileFields: ['id', 'email', 'gender', 'name']
   },
   function(accessToken, refreshToken, profile, done) {
-  	console.log('-------------------------------------------------')
+  	console.log('accessToken   - ',accessToken,'refreshToken   ',refreshToken,'profile   -- ',profile)
     User.findOrCreate({ facebookId: profile.id }, function(err, user) {
       if (err) { return done(err); }
       done(null, user);
@@ -168,15 +168,13 @@ var makeJist = function(users){
 	}
 	return basicData;
 }
-app.use(cookieParser());
-app.use(function(req,res,next){console.log(req.url,'--------***--',req.cookies);next()})
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine','jade');
 app.use(express.static('./HTML'));
 app.get('/', function(req, res){
 	res.redirect('/index.html');
 });
-app.get('/auth/facebook', passport.authenticate('facebook'));
+app.get('/auth/facebook', passport.authenticate('facebook',{scope:'email'}));
 app.get('/auth/facebook/callback',passport.authenticate('facebook', { successRedirect: '/allInternDetails',failureRedirect: '/' }));
 app.get(/\/interns/,function(req,res){
 	var userName = req.url.split('/interns/')[1];
@@ -201,7 +199,10 @@ app.get('/allInternDetails',function(req,res){
 	var basicData = makeJist(users);
 	res.render('allDetails',{basicData:basicData});
 });
-
+app.get('/logout', function(req, res){
+	req.logout();
+	res.redirect('/index.html');
+});
 app.get('/search',function(req,res){
 	var query = urlParse.qs.parse(req.url);
 	var userData = client.query('select * from '+query.gitId,function(err,result){

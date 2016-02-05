@@ -42,11 +42,12 @@ th{
     border-color: white;
 }
 #facebook{
-    margin-left: 86%;
-    margin-top: -29px;
+    float:right;
+    margin-top: -71px;
     width: 125px;
     display: inline-block;
 }
+
 .details th{
     background-color: #e7e9e9;
 }
