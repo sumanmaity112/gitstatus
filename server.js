@@ -6,6 +6,7 @@ var lodash = require('lodash');
 var queryString = require('querystring');
 var moment = require('moment-timezone');
 var urlParse = require('url-parse');
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var dbLib = require('./updateDb.js').dbLib;
 var lib = require('./takeImportantDetails.js').lib;
@@ -167,7 +168,8 @@ var makeJist = function(users){
 	}
 	return basicData;
 }
-app.use(function(req,res,next){console.log(req.url);next()})
+app.use(cookieParser());
+app.use(function(req,res,next){console.log(req.url,'--------***--',req.cookies);next()})
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine','jade');
 app.use(express.static('./HTML'));
