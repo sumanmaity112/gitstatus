@@ -36,11 +36,11 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'email', 'gender', 'name']
   },
   function(accessToken, refreshToken, profile, done) {
-  	console.log('accessToken   - ',accessToken,'refreshToken   ',refreshToken,'profile   -- ',profile)
-    User.findOrCreate({ facebookId: profile.id }, function(err, user) {
-      if (err) { return done(err); }
-      done(null, user);
-    });
+  	console.log('profile   -- ',profile._raw)
+    // User.findOrCreate({ facebookId: profile.id }, function(err, user) {
+      // if (err) { return done(err); }
+      done(null, profile._raw);
+    // });
   }
 ));
 
@@ -170,6 +170,10 @@ var makeJist = function(users){
 }
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine','jade');
+app.use(passport.initialize());
+passport.serializeUser(function(user, done) {
+	done(null, user);
+});
 app.use(express.static('./HTML'));
 app.get('/', function(req, res){
 	res.redirect('/index.html');
