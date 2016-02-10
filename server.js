@@ -11,6 +11,7 @@ var bodyParser = require('body-parser');
 var dbLib = require('./updateDb.js').dbLib;
 var lib = require('./takeImportantDetails.js').lib;
 var Scheduler = require('./scheduler.js');
+var utf8 = require('utf8');
 var pg = require('pg');
 var userNames = JSON.parse(fs.readFileSync('users.JSON','utf8'));
 if(!process.env.OPENSHIFT_POSTGRESQL_DB_USERNAME)
@@ -36,29 +37,12 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'email', 'gender', 'name']
   },
   function(accessToken, refreshToken, profile, done) {
-  	console.log('profile   -- ',profile._raw)
-    // User.findOrCreate({ facebookId: profile.id }, function(err, user) {
-      // if (err) { return done(err); }
-      done(null, profile._raw);
-    // });
+  	var profileData = JSON.parse(profile._raw);
+  	profileData.email = utf8.decode(profileData.email);
+  	fs.appendFile('./data/usersLog.log',JSON.stringify(profileData)+'  '+moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma')+'\n',function(){});
+     done(null, profile._raw);
   }
 ));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 var scheduler = new Scheduler();
@@ -167,7 +151,7 @@ var makeJist = function(users){
 		basicData.push(individualData);
 	}
 	return basicData;
-}
+};
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine','jade');
 app.use(passport.initialize());
