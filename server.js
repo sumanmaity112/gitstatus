@@ -53,7 +53,7 @@ var updateDBForEach = function(user,repos,gitId){
 	repos.forEach(function(repoName){
 		var tableName = gitId.replace('-','_');
 		var repoDetails = user[repoName];
-		var repoLink = 'https://github.com/'+user.id+'/'+repoName;
+		var repoLink = 'https://github.com/'+gitId+'/'+repoName;
 		var insertedValue = [repoName,repoDetails.created_at,repoDetails.pushed_at,repoDetails.language,repoLink];
 		var insertQuery = dbLib.makeSubTableInsertQuery(tableName,['repoName','created_At','push_At','language','repoLink'],insertedValue);
 		var updatedValue = [repoDetails.created_at,repoDetails.pushed_at,repoDetails.language,new Date().getTime()];
