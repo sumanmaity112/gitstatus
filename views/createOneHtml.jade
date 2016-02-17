@@ -35,6 +35,7 @@ html(lang="en")
 				tr(style='text-align:center')
 					td !{Object.keys(user)}
 					td !{user[Object.keys(user)].id}
+						a(href='https://github.com/'+user[Object.keys(user)].id,target='_blank',class='info')  &#x1f517
 					td !{Object.keys(user[Object.keys(user)]).length-2}
 			table(class='data')
 				tr(style='background-color:#a7a8ad')
@@ -55,6 +56,7 @@ html(lang="en")
 
 						tr(class=cls)
 							if x<=length-3
-								td=project
+								td !{project} 
+									a(href='https://github.com/'+user[Object.keys(user)].id+'/'+project,target='_blank',class='info') &#x1f517 
 								each value, index in key
 									td=value
