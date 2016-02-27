@@ -1,16 +1,10 @@
 body{
 	font-family: "Segoe UI",Arial,sans-serif;
 }
-h1{
-    width: 173px;
-	margin: 0 auto;
-	border-bottom: 2px lightgrey dashed;
-    text-align: center;
-}
 
 .userData{
     width : 1200px;
-    margin: 50px auto;
+    margin: 120px auto;
     padding: 30px;
 }
 

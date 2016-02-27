@@ -77,7 +77,7 @@ var updateDataBase = function(user,name){
 			updateDBForEach(user,repos,gitId);
 		}
 	}
-	lib.findDetails(user,callBack);	
+	lib.findDetails(user,callBack);
 }
 
 

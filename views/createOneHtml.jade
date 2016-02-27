@@ -1,5 +1,6 @@
 doctype html
 html(lang="en")
+	include ./head.jade
 	link(href='/style/createOneDetails.css', rel='stylesheet')
 	script(type="text/javascript").
 		(function(d, s, id){
@@ -21,11 +22,8 @@ html(lang="en")
 					window.location='/index.html'
 			})
 		};
-	head
 	body
-		h1 Git Status
-		form(name="signout",method="get",action="/logout")
-			input(type="submit",value="Logout")
+		include ./header.jade
 		div(class='userData')
 			table(class='details')
 				tr
@@ -56,7 +54,7 @@ html(lang="en")
 
 						tr(class=cls)
 							if x<=length-3
-								td !{project} 
-									a(href='https://github.com/'+user[Object.keys(user)].id+'/'+project,target='_blank',class='info') &#x1f517 
+								td !{project}
+									a(href='https://github.com/'+user[Object.keys(user)].id+'/'+project,target='_blank',class='info') &#x1f517
 								each value, index in key
 									td=value

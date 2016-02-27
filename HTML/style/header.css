@@ -1,0 +1,72 @@
+#page-name{
+	text-align: center;
+	margin: 0 auto;
+    font-size: 48px;
+    text-shadow: 2px 2px grey;
+}
+
+#page-name:hover {
+    transition: text-shadow 0.3s ease;
+    text-shadow: 2px 2px white;
+}
+
+.header{
+	width : 99.1%;
+    height: 120px;
+	margin: -120px auto;
+    background-color: skyblue;
+    position: fixed;
+}
+
+.header .logo{
+    height: auto;
+    float: left;
+    margin: 20px 0px 0px 100px;
+}
+
+.header .local-heading{
+    float: left;
+    margin-left: 20%;
+    margin-top: 4%;
+
+}
+
+.header .others{
+    padding: 10px 20px 10px 10px;
+    float: right;
+}
+
+.header .others .log-out{
+    height: 40px;
+    text-align: right;
+}
+
+.header .others .search-bar{
+    margin-top: 20px;
+    height: 40px;
+}
+
+#search{
+	font-size: 16px;
+    border-radius: 3px;
+	height : 20px;
+}
+#submit, #logout-button{
+	/*background-color: #A4A4A4;*/
+    width: 90px;
+    background-color: #2a71c4;
+    border: none;
+    color: white;
+    padding: 4px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	margin-left: 3px;
+}
+
+#submit:hover, #logout-button:hover {
+	transition: background-color 0.5s ease;
+	background-color: #E6E6E6;
+	color: #2a71c4;
+}
