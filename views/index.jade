@@ -1,0 +1,25 @@
+doctype html
+html(lang="en")
+    include ./head.jade
+    link(href='/style/index.css', rel='stylesheet')
+    body
+        div(class='header')
+            div(class='logo')
+                h1(id='page-name') Git Status
+            div(class='local-heading')
+            div(class='others')
+                div(class='log-out')
+                    a(href="#loginScreen",class="button")
+                        button(id="logout-button",onClick='toggleBox' #loginScreen) Log In
+
+                div(class='search-bar')
+                    form(name="searchForm",method="get",action="search",id="searchForm")
+                        input(type="text", name="gitId",placeholder="Enter a gitHub id...",id="search" required)
+                        input(type="submit",value="Search",id="submit")
+        div(class='wrapper')
+            div(align="center")
+            div(id="loginScreen")
+                a(href="/auth/facebook")
+                    img(src="./images/facebook-login.png",class="login-image")
+                a(href="#",class="cancel") &times
+            div(id="cover")

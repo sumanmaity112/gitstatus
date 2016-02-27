@@ -160,7 +160,8 @@ passport.serializeUser(function(user, done) {
 });
 app.use(express.static('./HTML'));
 app.get('/', function(req, res){
-	res.redirect('/index.html');
+	// res.redirect('/index.html');
+	res.render('index');
 });
 app.get('/auth/facebook', passport.authenticate('facebook',{scope:'email'}));
 app.get('/auth/facebook/callback',passport.authenticate('facebook', { successRedirect: '/allInternDetails',failureRedirect: '/' }));
