@@ -190,7 +190,8 @@ app.get('/allInternDetails',function(req,res){
 });
 app.get('/logout', function(req, res){
 	req.logout();
-	res.redirect('/index.html');
+	// res.render('/index.html');
+	res.render('index');
 });
 app.get('/search',function(req,res){
 	var query = urlParse.qs.parse(req.url);
