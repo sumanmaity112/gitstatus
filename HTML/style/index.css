@@ -1,14 +1,3 @@
-/*h1 {
-	font-size: 60px;
-	text-align: center;
-	font-weight: 400;
-	font-family: "Arial";
-	/*border-bottom: 3px solid black;*/
-/*	width: 360px;
-	margin: 0 auto;
-	padding-top: 20px;
-}*/
-
 #info{
 	text-align: center;
 	margin-top: 33px;
@@ -57,4 +46,30 @@
 
 .login-image{
 	margin: 30% 12%;
+}
+
+.menu-col{
+	float: left;
+	font-size: 20px;
+	margin-left: 10px;
+	padding-right: 10px;
+	border-right: 2px solid grey;
+}
+
+.menu-col-end{
+	float: left;
+	font-size: 20px;
+	margin-left: 10px;
+	padding-right: 10px;
+}
+
+
+.menu{
+	text-decoration: none;
+}
+
+.menu:hover{
+	text-decoration: none;
+	transition: color 0.3s ease;
+	color: black;
 }

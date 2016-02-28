@@ -6,7 +6,7 @@
 }
 
 #page-name:hover {
-    transition: text-shadow 0.3s ease;
+    transition: text-shadow 0.5s ease;
     text-shadow: 2px 2px white;
 }
 
@@ -18,17 +18,62 @@
     position: fixed;
 }
 
+
+.small-header{
+	transition: height 0.3s ease;
+	height: 80px;
+	position: fixed;
+	-webkit-transition-timing-function: linear; /* Safari and Chrome */
+    transition-timing-function: linear;
+	border-bottom: 3px solid grey;
+}
+
+.small-header #page-name{
+	transition: font-size 0.3s ease;
+	font-size: 36px;
+}
+
+.small-header .local-heading{
+	transition: margin 0.4s ease;
+	margin: 2% 0 0 20%;
+}
+
+.small-header .local-heading .menu{
+	transition: font-size 0.4s ease;
+	font-size: 16px;
+}
+
+
+.big-header{
+	transition: height 0.2s ease;
+	height: 120px;
+	position: fixed;
+}
+
+.big-header #page-name{
+	transition: font-size 0.3s ease;
+	font-size: 48px;
+}
+
+.big-header .local-heading{
+	transition: margin 0.3s ease;
+}
+
+.big-header .local-heading .menu{
+	transition: font-size 0.4s ease;
+}
+
 .header .logo{
     height: auto;
+	width: 250px;
     float: left;
     margin: 20px 0px 0px 100px;
 }
 
-.header .local-heading{
+.local-heading{
     float: left;
     margin-left: 20%;
     margin-top: 4%;
-
 }
 
 .header .others{
@@ -36,23 +81,22 @@
     float: right;
 }
 
-.header .others .log-out{
-    height: 40px;
-    text-align: right;
+.header .others .user-name{
+	color: #232b6c;
 }
 
 .header .others .search-bar{
-    margin-top: 20px;
-    height: 40px;
+	text-align: right;
+    margin-top: 5%;
 }
 
 #search{
 	font-size: 16px;
-    border-radius: 3px;
+	border-collapse: collapse;
+	background-color: rgba(#818a8e, 0.87);
 	height : 20px;
 }
-#submit, #logout-button{
-	/*background-color: #A4A4A4;*/
+/*#submit, #logout-button{
     width: 90px;
     background-color: #2a71c4;
     border: none;
@@ -63,10 +107,20 @@
     display: inline-block;
     font-size: 16px;
 	margin-left: 3px;
-}
+}*/
 
-#submit:hover, #logout-button:hover {
+/*#submit:hover, #logout-button:hover {
 	transition: background-color 0.5s ease;
 	background-color: #E6E6E6;
 	color: #2a71c4;
+}*/
+
+.search-box{
+	float: left;
+	padding-top: 5px;
+}
+
+.search-button{
+	padding-left: 5px;
+	float: left;
 }
