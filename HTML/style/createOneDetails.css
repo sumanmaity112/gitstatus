@@ -1,13 +1,3 @@
-body{
-	font-family: "Segoe UI",Arial,sans-serif;
-}
-
-.userData{
-    width : 1200px;
-    margin: 120px auto;
-    padding: 30px;
-}
-
 .even{
     background-color: #ededed;
 }
@@ -35,6 +25,7 @@ th{
     padding: 30px;
     border-color: white;
 }
+
 #facebook{
     float:right;
     margin-top: -71px;

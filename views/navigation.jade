@@ -1,0 +1,20 @@
+div(class='headers')
+    div(class='logos')
+        a(href='/',class='logo')
+            img(src='/images/square.svg')
+    div(class='nav')
+        ul
+            li
+                a(href='/',class='menu') Home
+            li
+                a(href='/',class='menu') About
+            li
+                a(href='/',class='menu') Contact
+            li
+                a(href="#loginScreen",class="menu") Log in
+    div(class='search-bar')
+        form(name="searchForm",method="get",action="search",id="searchForm")
+            div(class='search-box')
+                input(type="text", name="gitId",placeholder="Search GitHub",id="search" required)
+            div(class="search-button")
+                input(type="image",src='/images/active-search-symbol.svg')

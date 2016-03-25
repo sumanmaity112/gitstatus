@@ -1,23 +1,13 @@
 doctype html
 html(lang="en")
     include ./head.jade
-    link(href='/style/index.css', rel='stylesheet')
     body
-        div(class='header')
-            div(class='logo')
-                h1(id='page-name') Git Status
-            div(class='local-heading')
-                div(class='menu-col')
-                    a(href='/',class='menu') Home
-                div(class='menu-col')
-                    a(href='/',class='menu') About
-                div(class='menu-col')
-                    a(href='/',class='menu') Contact
-                div(class='menu-col-end')
-                    a(href="#loginScreen",class="menu") Log In
-            div(class='others')
+        include ./navigation.jade
         div(class='wrapper')
             div(class='about')
+                div(class='description')
+                    include ../data/description.txt
+                div(class='list')
             div(align="center")
             div(id="loginScreen")
                 a(href="/auth/facebook")

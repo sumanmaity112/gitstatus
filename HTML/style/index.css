@@ -7,7 +7,7 @@
 	position:fixed;
 	top:0;
 	left:0;
-	background:rgba(0,0,0,0.6);
+	background:rgba(0,0,0,0.8);
 	z-index:5;
 	width:100%;
 	height:100%;
@@ -20,9 +20,9 @@
 	position:relative;
 	z-index:10;
 	display:none;
-	border:2px solid skyblue;
+	border:2px solid #4CAF50;
 	border-radius:10px;
-	background-color: silver;
+	background-color: lavender;
 }
 
 #loginScreen:target, #loginScreen:target + #cover{
@@ -34,7 +34,6 @@
 	position:absolute;
 	top:3px;
 	right:2px;
-	background:rgb(245,245,245);
 	color:black;
 	height:30px;
 	width:35px;
@@ -44,32 +43,35 @@
 	font-weight:bold;
 }
 
+.cancel:hover{
+	text-decoration: none;
+	color: red;
+}
+
 .login-image{
-	margin: 30% 12%;
+	margin: 16% 12%;
 }
 
-.menu-col{
+.wrapper{
+	width :90%;
+	margin : 60px auto;
+	padding-top: 20px;
+}
+
+.description{
 	float: left;
-	font-size: 20px;
-	margin-left: 10px;
-	padding-right: 10px;
-	border-right: 2px solid grey;
+	width: 67%;
+	margin: 10px auto;
+	height: 100%;
+	padding: 10px;
+	/*background-color: orange;*/
 }
 
-.menu-col-end{
+.list{
 	float: left;
-	font-size: 20px;
-	margin-left: 10px;
-	padding-right: 10px;
-}
-
-
-.menu{
-	text-decoration: none;
-}
-
-.menu:hover{
-	text-decoration: none;
-	transition: color 0.3s ease;
-	color: black;
+	width: 30%;
+	margin: 10px auto;
+	height: 100%;
+	padding: 10px;
+	/*background-color: purple;*/
 }
