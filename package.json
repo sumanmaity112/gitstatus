@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "body-parser": "^1.14.2",
-    "cookie-parser": "^1.4.1",
     "express": "~3.4.4",
     "jade": "^1.11.0",
     "js-priority-queue": "^0.1.3",
