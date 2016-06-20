@@ -1,7 +1,8 @@
 var dbLib = {};
 
 dbLib.createTable = function (client, tableName, attributes) {
-    var query = "create table if not exists " + tableName.replace('-', '_') + " ( " + attributes.join() + ');';
+    tableName = tableName.replace('-', '_');
+    var query = "create table if not exists " + tableName + " ( " + attributes.join() + ');';
     this.runQuery(client, query);
 };
 dbLib.makeUpdateQuery = function (tableName, attributes, values, condition) {

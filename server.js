@@ -6,8 +6,9 @@ var lodash = require('lodash');
 var moment = require('moment-timezone');
 var urlParse = require('url-parse');
 var bodyParser = require('body-parser');
-var dbLib = require('./updateDb.js').dbLib;
+var dbLib = require('./database.js').dbLib;
 var lib = require('./takeImportantDetails.js').lib;
+var updateDatabase = require("./updateDatabase.js");
 var Scheduler = require('job_scheduler');
 var utf8 = require('utf8');
 var pg = require('pg');
@@ -22,14 +23,16 @@ client.connect();
 var updateDetails = lib.createResultForAnalysis;
 var users = {};
 
-var passport = require('passport')
+var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
 
 passport.use(new FacebookStrategy({
-        clientID: process.env.FACEBOOK_APP_ID,
-        clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: "http://gitstatus-projectsm.rhcloud.com/auth/facebook/callback",
-        profileFields: ['id', 'email', 'gender', 'name']
+        clientID: "188475074847404",
+        clientSecret:"5691abef8a0f74211e9451519a01efaf",
+        //callbackURL: "http://gitstatus-projectsm.rhcloud.com/auth/facebook/callback",
+        callbackURL: "http://localhost:4040/auth/facebook/callback",
+
+        profileFields: ['id', 'email', 'gender', 'name','picture']
     },
     function (accessToken, refreshToken, profile, done) {
         var profileData = JSON.parse(profile._raw);
@@ -59,7 +62,7 @@ var updateDBForEach = function (user, repos, gitId) {
         dbLib.runQuery(client, updateQuery);
     });
 };
-var updateDataBase = function (user, name) {
+var regularDatabaseUpdate = function (user, name) {
     name = name || null;
     var gitId = user.id;
     var gitHubLink = 'https://github.com/' + gitId;
@@ -87,7 +90,7 @@ tables.forEach(function (element) {
 
 var addJob = function () {
     userNames.forEach(function (userName) {
-        updateDataBase(userName, userName.name);
+        regularDatabaseUpdate(userName, userName.name);
         scheduler.addJob(userName, updateDetails);
     })
 };
@@ -134,7 +137,7 @@ var searchDetails = function (response, userName, res) {
         result[userName.name].total_repo = Object.keys(temp).length;
         result[userName.name].id = userName.id;
         res.render('createOneHtml', {user: result});
-        scheduler.addUrgentJob(result[Object.keys(result)[0]], updateDataBase);
+        scheduler.addUrgentJob(result[Object.keys(result)[0]], regularDatabaseUpdate);
     }
     else {
         res.statusCode = 404;
@@ -220,4 +223,6 @@ app.get('/search', function (req, res) {
 });
 
 var server = http.createServer(app);
-server.listen(PORT, IP_ADDRESS);
+server.listen(PORT, IP_ADDRESS,function(){
+    updateDatabase(userNames,client,readDataBase); //This update function holds a scheduler which will update all table data (users repo details) everyday midnight
+});
