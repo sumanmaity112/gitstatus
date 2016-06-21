@@ -27,12 +27,10 @@ var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
 
 passport.use(new FacebookStrategy({
-        clientID: "188475074847404",
-        clientSecret:"5691abef8a0f74211e9451519a01efaf",
-        //callbackURL: "http://gitstatus-projectsm.rhcloud.com/auth/facebook/callback",
-        callbackURL: "http://localhost:4040/auth/facebook/callback",
-
-        profileFields: ['id', 'email', 'gender', 'name','picture']
+        clientID: process.env.FACEBOOK_APP_ID,
+        clientSecret: process.env.FACEBOOK_APP_SECRET,
+        callbackURL: "http://gitstatus-projectsm.rhcloud.com/auth/facebook/callback",
+        profileFields: ['id', 'email', 'gender', 'name']
     },
     function (accessToken, refreshToken, profile, done) {
         var profileData = JSON.parse(profile._raw);
