@@ -1,7 +1,7 @@
 var dbLib = {};
 
-dbLib.createTable = function (client, tableName, attributes) {
-    tableName = tableName.replace('-', '_');
+dbLib.createTable = function (client, gitId, attributes) {
+    var tableName = gitId.replace('-', '_');
     var query = "create table if not exists " + tableName + " ( " + attributes.join() + ');';
     this.runQuery(client, query);
 };
@@ -21,6 +21,10 @@ dbLib.makeInsertQuery = function (tableName, attributes, values) {
 
 dbLib.makeSubTableInsertQuery = function (tableName, attributes, values) {
     return "insert into " + tableName + " (" + attributes.join(",") + ") select '" + values.join("','") + "' where (select not exists(select repoName from " + tableName + " where repoName='" + values[0] + "'));";
+};
+
+dbLib.makeMoveQuery = function(soureceTableName,destTableName,condition,moveableAttributes){
+    return "INSERT INTO " + destTableName + " (" + moveableAttributes.join(", ") + ") SELECT * FROM " + soureceTableName + " WHERE " + "(select not exists(select repoName from " + soureceTableName + " where " + condition + " ))" + " ; DELETE FROM " + soureceTableName + " WHERE " + condition + " ;";
 };
 
 dbLib.runQuery = function (client, query) {

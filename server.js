@@ -50,14 +50,7 @@ var updateDBForEach = function (user, repos, gitId) {
     repos.forEach(function (repoName) {
         var tableName = gitId.replace('-', '_');
         var repoDetails = user[repoName];
-        var repoLink = 'https://github.com/' + gitId + '/' + repoName;
-        var insertedValue = [repoName, repoDetails.created_at, repoDetails.pushed_at, repoDetails.language, repoLink];
-        var insertQuery = dbLib.makeSubTableInsertQuery(tableName, ['repoName', 'created_At', 'push_At', 'language', 'repoLink'], insertedValue);
-        var updatedValue = [repoDetails.created_at, repoDetails.pushed_at, repoDetails.language, new Date().getTime()];
-        dbLib.runQuery(client, insertQuery);
-        var updateAttributes = ['created_At', 'push_At', 'language', 'dbupdated_at']
-        var updateQuery = dbLib.makeUpdateQuery(tableName, updateAttributes, updatedValue, "repoName='" + repoName + "'");
-        dbLib.runQuery(client, updateQuery);
+        updateDatabase.modify(repoDetails,repoName,gitId,client,tableName);
     });
 };
 var regularDatabaseUpdate = function (user, name) {
@@ -67,6 +60,8 @@ var regularDatabaseUpdate = function (user, name) {
     var query = dbLib.makeInsertQuery('gitdetails', ['name', 'id', 'gitHubLink'], [name, gitId, gitHubLink]);
     dbLib.runQuery(client, query);
     dbLib.createTable(client, gitId, SUB_TABLE_ATTRIBUTES);
+    dbLib.createTable(client, gitId+"_erase", BACKUP_TABLE_ATTRIBUTES_WITH_TYPE); //It will create a new table for store the deleted repo if table not exists
+
     var callBack = function (response) {
         if (response.code == 200) {
             var user = lib.createRepoDetails(response.body);
@@ -79,6 +74,8 @@ var regularDatabaseUpdate = function (user, name) {
 
 
 const SUB_TABLE_ATTRIBUTES = ['repoName varchar(200) primary key', 'created_At varchar(25)', 'push_At varchar(25)', 'language varchar(25)', 'repoLink varchar(350)', 'dbupdated_at numeric(20)'];
+const BACKUP_TABLE_ATTRIBUTES_WITH_TYPE = ['repoName varchar(200) primary key', 'created_At varchar(25)', 'push_At varchar(25)', 'language varchar(25)', 'dbupdated_at numeric(20)'];
+const BACKUP_TABLE_ATTRIBUTES = ['reponame','created_At','push_At','language','dbupdated_at'];
 var gitAttributes = ['name varchar(200)', 'id varchar(100) primary key', 'gitHubLink varchar(250)'];
 var tables = [{tableName: 'gitdetails', gitAttributes: gitAttributes}];
 tables.forEach(function (element) {
@@ -222,5 +219,5 @@ app.get('/search', function (req, res) {
 
 var server = http.createServer(app);
 server.listen(PORT, IP_ADDRESS,function(){
-    updateDatabase(userNames,client,readDataBase); //This update function holds a scheduler which will update all table data (users repo details) everyday midnight
+    updateDatabase.schedule(userNames,client,readDataBase,BACKUP_TABLE_ATTRIBUTES); //This update function holds a scheduler which will update all table data (users repo details) everyday midnight
 });
