@@ -6,7 +6,7 @@ var lodash = require('lodash');
 var schedule = function (userNames, client, readDatabase,moveableAttributes) {
     var updateTableData = updateTable(client,moveableAttributes);
     var job = new cron({
-        cronTime: '00 00 24 * * *',
+        cronTime: '00 59 23 * * *',
         onTick: function () {
             updateDatabase(userNames, client, updateTableData);
             setTimeout(readDatabase, 600000);
@@ -26,7 +26,7 @@ var updateDatabase = function (userNames, client, updateTableData) {
 };
 
 var separateRepos = function (client, tableName, latestResult, gitId,moveableAttributes) {
-    client.query("select reponame from " + tableName, function (err, result) {
+    client.query("select reponame from " + tableName + ";", function (err, result) {
         if (!err) {
             var oldRepoNames = result.rows.map(function (row) {
                 return row.reponame
@@ -42,6 +42,8 @@ var separateRepos = function (client, tableName, latestResult, gitId,moveableAtt
             for (var repoName in latestResult) {
                 modify(latestResult[repoName], repoName, gitId, client, tableName);
             }
+        }else {
+            console.log("\n Error for ",tableName,"\n",err);
         }
     })
 };
@@ -53,7 +55,7 @@ var modify = function (repoDetails, repoName, gitId, client, tableName) {
     dbLib.runQuery(client, insertQuery);
     var updatedValue = [repoDetails.pushed_at, repoDetails.language, new Date().getTime()];
     var updateAttributes = ['push_At', 'language', 'dbupdated_at'];
-    var updateQuery = dbLib.makeUpdateQuery(tableName, updateAttributes, updatedValue, "repoName='" + repoName + "'");
+    var updateQuery = dbLib.makeUpdateQuery(tableName, updateAttributes, updatedValue, "repoName='" + repoName + "';");
     dbLib.runQuery(client, updateQuery);
 };
 

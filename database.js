@@ -24,7 +24,7 @@ dbLib.makeSubTableInsertQuery = function (tableName, attributes, values) {
 };
 
 dbLib.makeMoveQuery = function(soureceTableName,destTableName,condition,moveableAttributes){
-    return "INSERT INTO " + destTableName + " (" + moveableAttributes.join(", ") + ") SELECT * FROM " + soureceTableName + " WHERE " + "(select not exists(select repoName from " + soureceTableName + " where " + condition + " ))" + " ; DELETE FROM " + soureceTableName + " WHERE " + condition + " ;";
+    return "INSERT INTO " + destTableName + " (" + moveableAttributes.join(", ") + ") SELECT "+moveableAttributes.join(", ") +" FROM " + soureceTableName + " WHERE " + "(select not exists(select repoName from " + soureceTableName + " where " + condition + " ))" + " ; DELETE FROM " + soureceTableName + " WHERE " + condition + " ;";
 };
 
 dbLib.runQuery = function (client, query) {
