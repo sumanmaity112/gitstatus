@@ -59,7 +59,13 @@ var updateDBForEach = function (user, repos, gitId) {
 
 var isValidUser = function(req,res,next){
     var cookies = req.cookies;
-    cookies.loginAs ? next() : res.redirect('/#loginScreen');
+    cookies.loginAs ? next() : res.redirect('/');
+};
+
+var updateExpireTime = function(req,res){
+    var oldCookies= req.cookies;
+    res.cookie('loginAs',oldCookies.loginAs,{ expires: new Date(Date.now() + 1000 * 60 * 15), httpOnly: true });
+    res.cookie('pictureSource',oldCookies.pictureSource,{ expires: new Date(Date.now() + 1000 * 60 * 15), httpOnly: true });
 };
 
 var regularDatabaseUpdate = function (user, name) {
@@ -159,14 +165,20 @@ var makeJist = function (users) {
     }
     return basicData;
 };
+
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'jade');
 app.use(passport.initialize());
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
+
 app.use(express.static('./HTML'));
-app.get('/', function (req, res) {
+
+app.get('^\/$|^\/index$', function (req, res) {
+    if(req.cookies.loginAs)
+        res.redirect("/allInternDetails");
     res.render('index');
 });
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: 'email'}));
@@ -175,20 +187,21 @@ app.get('/auth/facebook/callback',
     passport.authenticate('facebook', {session: false, failureRedirect: "/"}),
     function (req, res) {
         var details = JSON.parse(req.user);
-        res.cookie('loginAs',cryptr.encrypt(details.first_name+" "+details.last_name));
-        res.cookie('pictureSource',cryptr.encrypt(details.picture.data.url));
+        res.cookie('loginAs',cryptr.encrypt(details.first_name+" "+details.last_name),{ expires: new Date(Date.now() + 1000 * 60 * 15), httpOnly: true });
+        res.cookie('pictureSource',cryptr.encrypt(details.picture.data.url),{ expires: new Date(Date.now() + 1000 * 60 * 15), httpOnly: true });
         res.redirect('/allInternDetails');
     });
 
-app.get('/logout', function (req, res,next) {
+app.get('/logout', function (req, res) {
     res.clearCookie('loginAs');
     res.clearCookie('pictureSource');
     req.logout();
     res.render('index');
 });
-app.use(cookieParser());
+
 app.use(isValidUser);
 app.get(/\/interns/, function (req, res) {
+    updateExpireTime(req,res);
     var userName = req.url.split('/interns/')[1];
     userName = userName.replace(/%20/g, ' ');
 
@@ -204,11 +217,13 @@ app.get(/\/interns/, function (req, res) {
 });
 
 app.get('/allInternDetails', function (req, res) {
+    updateExpireTime(req,res);
     var basicData = makeJist(users);
     res.render('allDetails', {basicData: basicData});
 });
 
 app.get('/search', function (req, res) {
+    updateExpireTime(req,res);
     var query = urlParse.qs.parse(req.url);
     var userData = client.query('select * from ' + query.gitId, function (err, result) {
         if (!!err || !result.rows.length || (new Date().getTime() - (+result.rows[0].dbupdated_at)) > 3600000)
