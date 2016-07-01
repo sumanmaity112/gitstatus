@@ -6,12 +6,15 @@ var lodash = require('lodash');
 var moment = require('moment-timezone');
 var urlParse = require('url-parse');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var dbLib = require('./database.js').dbLib;
 var lib = require('./takeImportantDetails.js').lib;
 var updateDatabase = require("./updateDatabase.js");
 var Scheduler = require('job_scheduler');
 var utf8 = require('utf8');
 var pg = require('pg');
+var Cryptr = require('cryptr');
+var cryptr = new Cryptr(process.env.encryptKey);
 var userNames = JSON.parse(fs.readFileSync('users.JSON', 'utf8'));
 if (!process.env.OPENSHIFT_POSTGRESQL_DB_USERNAME)
     var conString = 'pg://postgres:sumanmaity@localhost:5432/postgres'
@@ -30,7 +33,7 @@ passport.use(new FacebookStrategy({
         clientID: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
         callbackURL: "http://gitstatus-projectsm.rhcloud.com/auth/facebook/callback",
-        profileFields: ['id', 'email', 'gender', 'name']
+        profileFields: ['id', 'email', 'gender', 'name','picture']
     },
     function (accessToken, refreshToken, profile, done) {
         var profileData = JSON.parse(profile._raw);
@@ -53,6 +56,12 @@ var updateDBForEach = function (user, repos, gitId) {
         updateDatabase.modify(repoDetails,repoName,gitId,client,tableName);
     });
 };
+
+var isValidUser = function(req,res,next){
+    var cookies = req.cookies;
+    cookies.loginAs ? next() : res.redirect('/#loginScreen');
+};
+
 var regularDatabaseUpdate = function (user, name) {
     name = name || null;
     var gitId = user.id;
@@ -158,14 +167,27 @@ passport.serializeUser(function (user, done) {
 });
 app.use(express.static('./HTML'));
 app.get('/', function (req, res) {
-    // res.redirect('/index.html');
     res.render('index');
 });
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: 'email'}));
-app.get('/auth/facebook/callback', passport.authenticate('facebook', {
-    successRedirect: '/allInternDetails',
-    failureRedirect: '/'
-}));
+
+app.get('/auth/facebook/callback',
+    passport.authenticate('facebook', {session: false, failureRedirect: "/"}),
+    function (req, res) {
+        var details = JSON.parse(req.user);
+        res.cookie('loginAs',cryptr.encrypt(details.first_name+" "+details.last_name));
+        res.cookie('pictureSource',cryptr.encrypt(details.picture.data.url));
+        res.redirect('/allInternDetails');
+    });
+
+app.get('/logout', function (req, res,next) {
+    res.clearCookie('loginAs');
+    res.clearCookie('pictureSource');
+    req.logout();
+    res.render('index');
+});
+app.use(cookieParser());
+app.use(isValidUser);
 app.get(/\/interns/, function (req, res) {
     var userName = req.url.split('/interns/')[1];
     userName = userName.replace(/%20/g, ' ');
@@ -181,20 +203,11 @@ app.get(/\/interns/, function (req, res) {
     }
 });
 
-app.post('/login', function (req, res) {
-    fs.appendFile('./data/usersLog.log', req.body.name + '  ' + moment(new Date().toISOString()).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mma') + '\n', function () {
-    });
-    res.redirect('/allInternDetails');
-});
 app.get('/allInternDetails', function (req, res) {
     var basicData = makeJist(users);
     res.render('allDetails', {basicData: basicData});
 });
-app.get('/logout', function (req, res) {
-    req.logout();
-    // res.render('/index.html');
-    res.render('index');
-});
+
 app.get('/search', function (req, res) {
     var query = urlParse.qs.parse(req.url);
     var userData = client.query('select * from ' + query.gitId, function (err, result) {
