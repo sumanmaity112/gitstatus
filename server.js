@@ -222,6 +222,14 @@ app.get('/allInternDetails', function (req, res) {
     res.render('allDetails', {basicData: basicData});
 });
 
+// newly added endpoint to for rendering page after login
+app.get('/landing-page',function(req, res){
+	res.redirect('landingPage.html');
+});
+app.get('/step-4-interns',function(req,res){
+	res.redirect('step-4-interns.html');
+});
+
 app.get('/search', function (req, res) {
     updateExpireTime(req,res);
     var query = urlParse.qs.parse(req.url);
