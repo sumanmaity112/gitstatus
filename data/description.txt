@@ -1,2 +1,4 @@
-Nothing to say here. Actually this was first made for the users of the github.
-Just to get all the users of a particular community to a place and their github repositories.
+<p>Hearty welcome to <b><a href="/">gitstatus</a></b> ! A very simple and minimal approach to make this useful. Git is a very useful technology for all the people who are somehow part of coding in different prospective. So, here we have thought to make this website get statuses of various people's github repositories around you. The main feature you will get here as of now, is you can search for one's github account number of repositories it contains and obviously the repositories.</p>
+
+<p>You can get some amount of recreation as of now you will be able to get some games to play.
+You can also configure your profile here in git status for you own references.</p>
