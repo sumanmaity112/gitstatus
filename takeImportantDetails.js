@@ -34,7 +34,7 @@ var updateResult = function (response, userName) {
 };
 
 lib.findDetails = function (userName, callBack, res) {
-    var url = 'https://api.github.com/users/' + userName.id + '/repos';
+    var url = 'https://api.github.com/users/' + userName.id + '/repos?per_page=10000';
     unirest.get(url)
         .header('User-Agent', 'AppleWebKit/531.21.10')
         .header("Accept", "application/json")
