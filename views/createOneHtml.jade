@@ -41,6 +41,7 @@ html(lang="en")
 					th Created At
 					th Last Update
 					th Language
+					th Visualize
 					- var i = 1;
 					each key, index in user[Object.keys(user)]
 						- i=i+1
@@ -58,3 +59,10 @@ html(lang="en")
 									a(href='https://github.com/'+user[Object.keys(user)].id+'/'+project,target='_blank',class='info') &#x1f517
 								each value, index in key
 									td=value
+								td
+									button
+										a(href="http://ghv.artzub.com/#repo=" + project + "&climit=100&user=" + user[Object.keys(user)].id,target='_blank',class='info',title='Visualize commit wise')
+											img(src="/images/visualize.png" height="12px")
+									button
+										a(href="http://veniversum.me/git-visualizer/?owner=" + user[Object.keys(user)].id + "&repo=" + project,target='_blank',class='info',title='Visualize file structure')
+											img(src="/images/fileStructure.png" height="12px")
